@@ -3,17 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StorePurchaseRequest;
 use App\Mail\TicketPurchaseMail;
 use App\Models\Event;
 use App\Models\Purchase;
 use App\Models\Question;
 use App\Models\TicketAvailability;
 use App\Models\TicketType;
+use App\Repositories\EventBooking;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class UserDashboardController extends Controller
 {
+
+    protected $eventBooking;
+    public function __construct()
+    {
+        $this->eventBooking = new EventBooking;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -61,95 +71,14 @@ class UserDashboardController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePurchaseRequest $request)
     {
-        $validatedData = $request->validate([
-            'ticket_type_id' => 'required|exists:ticket_types,id',
-            'event_id'       => 'required|exists:events,id',
-            'user_id'        => 'required|exists:users,id',
-            'quantity'       => 'required|integer|min:1',
-        ]);
-
         try {
-            // Retrieve ticket availability
-            $ticketAvailability = TicketAvailability::with('ticketTypes')
-                ->where('event_id', $validatedData['event_id'])
-                ->where('ticket_type_id', $validatedData['ticket_type_id'])
-                ->first();
-
-            if (!$ticketAvailability) {
-                return response()->json(['error' => 'Ticket availability not found.'], 404);
-            }
-
-            // Check ticket availability
-            if ($ticketAvailability->available_tickets < $validatedData['quantity']) {
-                return response()->json(['error' => 'Not enough tickets available.'], 400);
-            }
-
-            // Update ticket availability
-            $ticketAvailability->available_tickets -= $validatedData['quantity'];
-            $ticketAvailability->sold_tickets += $validatedData['quantity'];
-            $ticketAvailability->save();
-
-            // Calculate total price
-            $totalPrice = $ticketAvailability->price * $validatedData['quantity'];
-
-            // Start fake payment process
-            $paymentResult = $this->processPayment($validatedData['user_id'], $totalPrice);
-
-            if (!$paymentResult['success']) {
-                return response()->json(['error' => $paymentResult['message']], 400);
-            }
-
-            // Store the purchase
-            Purchase::create([
-                'user_id'        => $validatedData['user_id'],
-                'ticket_type_id' => $validatedData['ticket_type_id'],
-                'event_id'       => $validatedData['event_id'],
-                'quantity'       => $validatedData['quantity'],
-                'total_price'    => $totalPrice,
-                'payment_status' => $paymentResult['success'] ? Purchase::PAYMENT_SUCCESS : Purchase::PAYMENT_FAILED,
-                'transaction_id' => $paymentResult['transaction_id'] ?? null,
-            ]);
-
-            // Get event details
-            $event = Event::findOrFail($validatedData['event_id']);
-
-            // Prepare ticket details for email
-            $ticketDetails = [
-                'user_name'         => auth()->user()->name ?? 'User',
-                'ticket_type_name'  => $ticketAvailability->ticketTypes->name ?? 'Unknown',
-                'quantity'          => $validatedData['quantity'],
-                'total_price'       => $totalPrice,
-                'event_name'        => $event->title,
-                'event_date'        => $event->date,
-            ];
-
-            // Send email to the user
-            Mail::to(auth()->user()->email)->send(new TicketPurchaseMail($ticketDetails));
-
-            return response()->json(['success' => 'Ticket purchased successfully!'], 200);
+            $this->eventBooking->store($request->validated());
+            return response()->json(['success' => 'Purchase created successfully!']);
         } catch (\Exception $e) {
-            // Log the error for debugging
-            \Log::error('Error in ticket purchase: ' . $e->getMessage());
-
-            return response()->json(['error' => 'An error occurred while processing your request.'], 500);
+            return response()->json(['error' => $e->getMessage()], $e->getCode() ?: 500);
         }
-    }
-
-    private function processPayment($userId, $amount)
-    {
-        if ($amount < 100) {
-            return [
-                'success' => false,
-                'message' => 'Payment failed due to insufficient balance.',
-            ];
-        }
-
-        return [
-            'success' => true,
-            'transaction_id' => uniqid('txn_'),
-        ];
     }
 
     public function addQuestion(Request $request)

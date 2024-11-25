@@ -54,6 +54,22 @@
                 </li>
                 @endcan
 
+                @canany(['purchase-history.view'])
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('purchase-history.index') }}" >
+                        <i class="ri-dashboard-2-line"></i>
+                        <span data-key="t-dashboards">Purchase History</span>
+                    </a>
+                </li>
+                @endcan
+                @canany(['questions.view'])
+                <li class="nav-item">
+                    <a class="nav-link menu-link" href="{{ route('questions.index') }}" >
+                        <i class="ri-dashboard-2-line"></i>
+                        <span data-key="t-dashboards">Questions/Comments</span>
+                    </a>
+                </li>
+                @endcan
                 @canany(['users.view', 'roles.view'])
                 <li class="nav-item">
                     <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">

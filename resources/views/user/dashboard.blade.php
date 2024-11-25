@@ -57,9 +57,11 @@
                                     <td>{{ $event->description }}</td>
                                     <td>{{ ($event->status == 1) ? 'Active':''  }}</td>
                                     <td>
+                                        @can('events.show')
                                         <a href="{{ route('events.show',$event->id) }}" class="edit-element btn btn-secondary px-2 py-1" title="Show Employee">
                                                     <i data-feather="eye"></i>
                                         </a>
+                                        @endcan
                                     </td>
 
                                 </tr>

@@ -29,7 +29,7 @@ class EventController extends Controller
     public function index()
     {
         $authUser = Auth::user();
-        
+
         $events = Event::when(
             $authUser->hasRole('Organizer'),
             function ($query) use ($authUser) {
@@ -38,7 +38,7 @@ class EventController extends Controller
         )
         ->latest()
         ->get();
-        
+
 
         return view('events.event-list')->with(['events' => $events]);
     }
@@ -71,32 +71,11 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
+
         if ($event) {
-            $ticketTypes = TicketType::with('ticketAvailabilities')->latest()->get();
+            $data = $this->eventRepository->showEvent($event);
 
-            $eventId = $event->id;
-
-            $ticketTypes = TicketType::with(['ticketAvailabilities' => function ($query) use ($eventId) {
-                $query->where('event_id', $eventId);
-            }])->latest()->get();
-
-            $TicketType = $ticketTypes->map(function ($type) {
-                $availability = $type->ticketAvailabilities->first();
-                return [
-                    'ticket_type_id'    => $type->id,
-                    'ticket_type_name'  => $type->name,
-                    'total_tickets'     => $availability->total_tickets ?? 0,
-                    'sold_tickets'      => $availability->sold_tickets ?? 0,
-                    'available_tickets' => $availability->available_tickets ?? 0,
-                    'price'             => $availability->price ?? 0,
-                ];
-            });
-
-            return view('events.show')->with([
-                'event'       => $event,
-                'ticketTypes' => $TicketType,
-            ]);
-
+            return view('events.show', $data);
         }
     }
 
@@ -145,6 +124,20 @@ class EventController extends Controller
         catch(\Exception $e)
         {
             return $this->respondWithAjax($e, 'deleting', 'Event');
+        }
+    }
+
+    // Change Loan Status
+    public function changeStatus($model_id, $btn_status, Request $request)
+    {
+        try {
+            $event = Event::find($model_id);
+            $event->status = $btn_status;
+            $event->updated_at = date('Y-m-d H:i:s');
+            $event->save();
+            return response()->json(['success' => 'Event Cancel successfully!']);
+        } catch (\Exception $e) {
+            return $this->respondWithAjax($e, 'updating', 'Event');
         }
     }
 }

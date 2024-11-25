@@ -3,14 +3,12 @@
 namespace App\Repositories;
 
 use App\Models\Event;
+use App\Models\Purchase;
 use App\Models\TicketAvailability;
 use App\Models\TicketType;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
-
-
-
 
 class EventManagement
 {
@@ -96,6 +94,38 @@ class EventManagement
         }
 
         DB::commit();
+    }
+
+    public function showEvent($event)
+    {
+        $ticketTypes = TicketType::with('ticketAvailabilities')->latest()->get();
+
+        $eventId = $event->id;
+
+        $ticketTypes = TicketType::with(['ticketAvailabilities' => function ($query) use ($eventId) {
+            $query->where('event_id', $eventId);
+        }])->latest()->get();
+
+        $TicketType = $ticketTypes->map(function ($type) {
+            $availability = $type->ticketAvailabilities->first();
+            return [
+                'ticket_type_id'    => $type->id,
+                'ticket_type_name'  => $type->name,
+                'total_tickets'     => $availability->total_tickets ?? 0,
+                'sold_tickets'      => $availability->sold_tickets ?? 0,
+                'available_tickets' => $availability->available_tickets ?? 0,
+                'price'             => $availability->price ?? 0,
+            ];
+        });
+
+        // Attendee Details
+        $attendee = Purchase::with('event','user','ticketType')->where('event_id',$eventId)->get();
+
+        return [
+            'event'       => $event,
+            'ticketTypes' => $TicketType,
+            'attendee'    => $attendee,
+        ];
     }
 
 }

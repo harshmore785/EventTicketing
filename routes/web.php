@@ -47,10 +47,13 @@ Route::middleware(['auth', 'PreventBackHistory', 'firewall.all'])->group(functio
     Route::post('add-question', [App\Http\Controllers\Admin\UserDashboardController::class, 'addQuestion'])->name('add-question');
 
 
-    // Masters
+    // Event Management
     Route::resource('events', App\Http\Controllers\Organizer\EventController::class);
+    Route::post('event-activity-status/{model_id}/{btn_status}', [App\Http\Controllers\Organizer\EventController::class, 'changeStatus'])->name('event-activity-status');
 
-
+    // Event Booking
+    Route::resource('purchase-history', App\Http\Controllers\Attendee\PurchaseHistoryController::class);
+    Route::resource('questions', App\Http\Controllers\Attendee\QuestionsController::class);
 
 
     // Users Roles n Permissions

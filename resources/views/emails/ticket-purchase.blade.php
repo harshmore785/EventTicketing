@@ -1,3 +1,6 @@
+@php
+    use Illuminate\Support\Facades\Crypt;
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,7 +8,7 @@
 </head>
 <body>
     <h1>Thank You for Your Purchase!</h1>
-    <p>Dear {{ $ticketDetails['user_name'] }},</p>
+    <p>Dear {{ Crypt::decryptstring($ticketDetails['user_name']) }},</p>
 
     <p>Here are your ticket details:</p>
     <ul>

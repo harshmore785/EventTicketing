@@ -1,3 +1,7 @@
+@php
+    use Illuminate\Support\Facades\Auth;
+    use Illuminate\Support\Facades\Crypt;
+@endphp
 <x-admin.layout>
     <x-slot name="title">Details of Event</x-slot>
     <x-slot name="heading">Details of Event</x-slot>
@@ -38,7 +42,78 @@
                             </div>
                             <hr>
                             <h4 class="card-title">Show Ticket Availabilty</h4>
+                            @if (Auth::user()->hasrole('Organizer'))
+                            <table class="table table-borderd">
+                                <thead>
+                                    <tr>
+                                        <th>Ticket Type</th>
+                                        <th>Total Tickets</th>
+                                        <th>Sold Tickets</th>
+                                        <th>Available Tickets</th>
+                                        <th>Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($ticketTypes as $ticketType)
+                                        <tr>
+                                            <td>
+                                                <input type="hidden" class="form-control" name="ticket_type_id[]" value="{{ $ticketType['ticket_type_id'] }}" readonly>
+                                                {{ $ticketType['ticket_type_name'] }}
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="total_tickets[]" value="{{ $ticketType['total_tickets'] }}" readonly>
+                                                <span class="text-danger is-invalid total_tickets_err"></span>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="sold_tickets[]" readonly value="{{ $ticketType['sold_tickets'] }}">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="available_tickets[]" readonly value="{{ $ticketType['available_tickets'] }}">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="price[]" value="{{ $ticketType['price'] }}" readonly>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
 
+                            <h4 class="card-title">Attendee Details</h4>
+                            <table class="table table-borderd">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Ticket Type</th>
+                                        <th>Total Tickets</th>
+                                        <th>Price</th>
+                                        <th>Transaction ID</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($attendee as $attendee)
+                                        <tr>
+                                            <td>
+                                                {{ Crypt::decryptstring($attendee?->user?->name) }}
+                                            </td>
+                                            <td>
+                                                {{ $attendee?->ticketType?->name }}
+                                            </td>
+                                            <td>
+                                                {{ $attendee?->quantity }}
+                                            </td>
+                                            <td>
+                                                {{ $attendee?->total_price }}
+                                            </td>
+                                            <td>
+                                                {{ $attendee?->transaction_id }}
+                                            </td>
+
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+
+                           @else
                             <div class="row">
                                 @foreach ($ticketTypes as $ticketType)
                                     <div class="col-xl-4 col-md-4">
@@ -54,6 +129,7 @@
                                                         </h4>
                                                         <h6 class="fw-semibold ff-secondary mb-0">
                                                             {{ $ticketType['total_tickets'] . "/" . $ticketType['available_tickets'] }}
+                                                            <br><br>Click here for purchase
                                                         </h6>
                                                     </div>
                                                 </div>
@@ -62,13 +138,19 @@
                                     </div>
                                 @endforeach
                             </div>
-
+                            @endif
 
                         </div>
+                        @if (Auth::user()->hasrole('Organizer'))
+                        <div class="card-footer">
+                            <a href="{{ route('events.index') }}" type="button" class="btn btn-warning">Cancel</a>
+                        </div>
+                        @else
                         <div class="card-footer">
                             <button type="submit" class="btn btn-primary" id="addQuestion" data-id="{{ $event->id }}">Have any Question ?</button>
                             <a href="{{ route('user-dashboard.index') }}" type="button" class="btn btn-warning">Cancel</a>
                         </div>
+                        @endif
                     </form>
                 </div>
             </div>

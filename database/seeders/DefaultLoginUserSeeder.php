@@ -36,7 +36,7 @@ class DefaultLoginUserSeeder extends Seeder
 
         // Admin Seeder ##
         $adminRole = Role::updateOrCreate(['name'=> 'Organizer']);
-        $permissions = Permission::whereIn('id', [1, 13, 14, 15, 16])->pluck('id', 'id')->all();
+        $permissions = Permission::whereIn('id', [1, 13, 14, 15, 16,19])->pluck('id', 'id')->all();
         $adminRole->syncPermissions($permissions);
 
         $user = User::updateOrCreate([
@@ -51,7 +51,7 @@ class DefaultLoginUserSeeder extends Seeder
 
         // Admin Seeder ##
         $adminRole = Role::updateOrCreate(['name'=> 'Attendee']);
-        $permissions = Permission::whereIn('id', [1])->pluck('id', 'id')->all();
+        $permissions = Permission::whereIn('id', [1, 17, 18,19])->pluck('id', 'id')->all();
         $adminRole->syncPermissions($permissions);
 
         $user = User::updateOrCreate([

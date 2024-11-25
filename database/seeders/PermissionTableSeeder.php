@@ -94,6 +94,21 @@ class PermissionTableSeeder extends Seeder
                 'name' => 'events.delete',
                 'group' => 'events',
             ],
+            [
+                'id' => 17,
+                'name' => 'events.show',
+                'group' => 'events',
+            ],
+            [
+                'id' => 18,
+                'name' => 'purchase-history.view',
+                'group' => 'purchase-history',
+            ],
+            [
+                'id' => 19,
+                'name' => 'questions.view',
+                'group' => 'questions',
+            ],
         ];
 
         foreach ($permissions as $permission)

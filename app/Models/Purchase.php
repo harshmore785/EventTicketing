@@ -13,8 +13,23 @@ class Purchase extends BaseModel
 
     const PAYMENT_SUCCESS = 1;
     const PAYMENT_FAILED = 0;
-    
+
     protected $fillable = ['user_id', 'ticket_type_id','event_id', 'quantity', 'total_price', 'payment_status', 'transaction_id'];
+
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function ticketType()
+    {
+        return $this->belongsTo(TicketType::class, 'ticket_type_id');
+    }
 
     public static function booted()
     {

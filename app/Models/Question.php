@@ -13,6 +13,11 @@ class Question extends BaseModel
 
     protected $fillable = ['user_id','event_id', 'subject', 'description'];
 
+    public function event()
+    {
+        return $this->belongsTo(Event::class, 'event_id');
+    }
+
     public static function booted()
     {
         static::created(function (self $user)
