@@ -16,6 +16,7 @@ use App\Models\User;
 use App\Models\Ward;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Crypt;
 
 class UserController extends Controller
 {
@@ -48,7 +49,13 @@ class UserController extends Controller
             DB::beginTransaction();
             $input = $request->validated();
             $input['password'] = Hash::make($input['password']);
-            $user = User::create( Arr::only( $input, Auth::user()->getFillable() ) );
+            $input['name']      = Crypt::encryptString($input['name']);
+            $input['email']     = Crypt::encryptString($input['email']);
+            $input['mobile']    = Crypt::encryptString($input['mobile']);
+
+            $fillable = (Auth::check()) ? Auth::user()->getFillable() : (new User())->getFillable();
+            $user = User::create(Arr::only($input, $fillable));
+            // $user = User::create( Arr::only( $input, Auth::user()->getFillable() ) );
             DB::table('model_has_roles')->insert(['role_id'=> $input['role'], 'model_type'=> 'App\Models\User', 'model_id'=> $user->id]);
             DB::commit();
             return response()->json(['success'=> 'User created successfully!']);

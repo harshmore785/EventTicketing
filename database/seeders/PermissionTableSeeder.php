@@ -76,23 +76,23 @@ class PermissionTableSeeder extends Seeder
             ],
             [
                 'id' => 13,
-                'name' => 'wards.view',
-                'group' => 'wards',
+                'name' => 'events.view',
+                'group' => 'events',
             ],
             [
                 'id' => 14,
-                'name' => 'wards.create',
-                'group' => 'wards',
+                'name' => 'events.create',
+                'group' => 'events',
             ],
             [
                 'id' => 15,
-                'name' => 'wards.edit',
-                'group' => 'wards',
+                'name' => 'events.edit',
+                'group' => 'events',
             ],
             [
                 'id' => 16,
-                'name' => 'wards.delete',
-                'group' => 'wards',
+                'name' => 'events.delete',
+                'group' => 'events',
             ],
         ];
 

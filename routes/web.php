@@ -30,6 +30,7 @@ Route::middleware(['guest', 'PreventBackHistory', 'firewall.all'])->group(functi
 
 
 
+Route::resource('users', App\Http\Controllers\Admin\UserController::class);
 
 // Authenticated users
 Route::middleware(['auth', 'PreventBackHistory', 'firewall.all'])->group(function () {
@@ -42,17 +43,17 @@ Route::middleware(['auth', 'PreventBackHistory', 'firewall.all'])->group(functio
     Route::get('show-change-password', [App\Http\Controllers\Admin\AuthController::class, 'showChangePassword'])->name('show-change-password');
     Route::post('change-password', [App\Http\Controllers\Admin\AuthController::class, 'changePassword'])->name('change-password');
 
+    Route::resource('user-dashboard', App\Http\Controllers\Admin\UserDashboardController::class);
+    Route::post('add-question', [App\Http\Controllers\Admin\UserDashboardController::class, 'addQuestion'])->name('add-question');
 
 
     // Masters
-    Route::resource('wards', App\Http\Controllers\Admin\Masters\WardController::class);
     Route::resource('events', App\Http\Controllers\Organizer\EventController::class);
 
 
 
 
     // Users Roles n Permissions
-    Route::resource('users', App\Http\Controllers\Admin\UserController::class);
     Route::get('users/{user}/toggle', [App\Http\Controllers\Admin\UserController::class, 'toggle'])->name('users.toggle');
     Route::get('users/{user}/retire', [App\Http\Controllers\Admin\UserController::class, 'retire'])->name('users.retire');
     Route::put('users/{user}/change-password', [App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('users.change-password');

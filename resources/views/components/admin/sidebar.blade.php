@@ -31,32 +31,28 @@
                 <li class="menu-title">
                     <span data-key="t-menu">Menu</span>
                 </li>
-
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="{{ route('dashboard') }}" >
+                    <a class="nav-link menu-link" href="{{ (Auth::user()->hasrole('Attendee'))? route('user-dashboard.index') : route('dashboard')  }}" >
                         <i class="ri-dashboard-2-line"></i>
                         <span data-key="t-dashboards">Dashboard</span>
                     </a>
                 </li>
 
-
+                @canany(['events.view'])
                 <li class="nav-item">
-                    <a class="nav-link menu-link" href="#sidebarLayouts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
+                    <a class="nav-link menu-link {{ request()->routeIs('events.index') ? 'active' : 'collapsed' }}" href="#sidebarLayouts" data-bs-toggle="collapse" role="button" aria-expanded="false" aria-controls="sidebarLayouts">
                         <i class="ri-layout-3-line"></i>
-                        <span data-key="t-layouts">Masters</span>
+                        <span data-key="t-layouts">Event Management</span>
                     </a>
-                    <div class="collapse menu-dropdown" id="sidebarLayouts">
+                    <div class="collapse menu-dropdown {{ request()->routeIs('events.index') ? 'show' : '' }}" id="sidebarLayouts">
                         <ul class="nav nav-sm flex-column">
                             <li class="nav-item">
-                                <a href="{{ route('events.index') }}" class="nav-link" data-key="t-horizontal">Event</a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="{{ route('wards.index') }}" class="nav-link" data-key="t-horizontal">Wards</a>
+                                <a href="{{ route('events.index') }}" class="nav-link {{ request()->routeIs('events.index') ? 'active' : '' }}" data-key="t-horizontal">Event</a>
                             </li>
                         </ul>
                     </div>
                 </li>
-
+                @endcan
 
                 @canany(['users.view', 'roles.view'])
                 <li class="nav-item">

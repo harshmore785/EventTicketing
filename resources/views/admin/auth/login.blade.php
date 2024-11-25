@@ -29,7 +29,7 @@
                             <div class="row g-0">
                                 <div class="col-lg-6">
                                     <div class="p-lg-5 p-4 auth-one-bg h-100">
-                                        <div class="bg-overlay"></div>
+                                        {{-- <div class="bg-overlay"></div> --}}
                                         <div class="position-relative h-100 d-flex flex-column">
                                             <div class="mb-4">
                                                 <a href="index.html" class="d-block">
@@ -46,13 +46,6 @@
                                                         <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                                                         <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
                                                         <button type="button" data-bs-target="#qoutescarouselIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                                    </div>
-                                                    <div class="carousel-inner text-center text-white pb-5">
-                                                        @foreach ($quotes as $quote)
-                                                            <div class="carousel-item {{ $loop->first ? 'active' : '' }}">
-                                                                <p class="fs-15 fst-italic">{!! $quote !!}</p>
-                                                            </div>
-                                                        @endforeach
                                                     </div>
                                                 </div>
                                             </div>
@@ -76,19 +69,12 @@
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <div class="float-end">
-                                                        <a href="auth-pass-reset-cover.html" class="text-muted">Forgot password?</a>
-                                                    </div>
+
                                                     <label class="form-label" for="password-input">Password</label>
                                                     <div class="position-relative auth-pass-inputgroup mb-3">
                                                         <input type="password" class="form-control pe-5 password-input" placeholder="Enter password" id="password" name="password" >
                                                         <button class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted password-addon" type="button" id="password-addon"><i class="ri-eye-fill align-middle"></i></button>
                                                     </div>
-                                                </div>
-
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="remember_me" name="remember_me">
-                                                    <label class="form-check-label" for="auth-remember-check">Remember me</label>
                                                 </div>
 
                                                 <div class="mt-4">
@@ -99,7 +85,7 @@
                                         </div>
 
                                         <div class="mt-5 text-center">
-                                            <p class="mb-0">Don't have an account ? <a href="auth-signup-cover.html" class="fw-semibold text-primary text-decoration-underline"> Signup</a> </p>
+                                            <p class="mb-0">Don't have an account ? <a href="{{ route('register') }}" class="fw-semibold text-primary text-decoration-underline"> Signup</a> </p>
                                         </div>
                                     </div>
                                 </div>
@@ -153,7 +139,11 @@
             processData: false,
             success: function(data) {
                 if (!data.error && !data.error2) {
+                    if(data.user_type == 'Attendee'){
+                            window.location.href = '{{ route('user-dashboard.index') }}';
+                    }else{
                         window.location.href = '{{ route('dashboard') }}';
+                    }
                 } else {
                     if (data.error2) {
                         swal("Error!", data.error2, "error");

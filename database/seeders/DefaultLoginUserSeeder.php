@@ -7,7 +7,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-
+use Illuminate\Support\Facades\Crypt;
 
 class DefaultLoginUserSeeder extends Seeder
 {
@@ -23,11 +23,11 @@ class DefaultLoginUserSeeder extends Seeder
         $superAdminRole->syncPermissions($permissions);
 
         $user = User::updateOrCreate([
-            'email' => 'superadmin@gmail.com'
+            'email' => Crypt::encryptString('superadmin@gmail.com')
         ],[
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'mobile' => '9999999991',
+            'name' => Crypt::encryptString('Super Admin'),
+            'email' => Crypt::encryptString('superadmin@gmail.com'),
+            'mobile' => Crypt::encryptString('9999999991'),
             'password' => Hash::make('12345678'),
         ]);
         $user->assignRole([$superAdminRole->id]);
@@ -36,15 +36,30 @@ class DefaultLoginUserSeeder extends Seeder
 
         // Admin Seeder ##
         $adminRole = Role::updateOrCreate(['name'=> 'Organizer']);
-        $permissions = Permission::pluck('id','id')->all();
+        $permissions = Permission::whereIn('id', [1, 13, 14, 15, 16])->pluck('id', 'id')->all();
         $adminRole->syncPermissions($permissions);
 
         $user = User::updateOrCreate([
-            'email' => 'organizer@gmail.com'
+            'email' => Crypt::encryptString('organizer@gmail.com')
         ],[
-            'name' => 'Organizer',
-            'email' => 'organizer@gmail.com',
-            'mobile' => '9999999992',
+            'name' => Crypt::encryptString('Organizer'),
+            'email' => Crypt::encryptString('organizer@gmail.com'),
+            'mobile' => Crypt::encryptString('9999999992'),
+            'password' => Hash::make('12345678')
+        ]);
+        $user->assignRole([$adminRole->id]);
+
+        // Admin Seeder ##
+        $adminRole = Role::updateOrCreate(['name'=> 'Attendee']);
+        $permissions = Permission::whereIn('id', [1])->pluck('id', 'id')->all();
+        $adminRole->syncPermissions($permissions);
+
+        $user = User::updateOrCreate([
+            'email' => Crypt::encryptString('attendee@gmail.com')
+        ],[
+            'name' => Crypt::encryptString('Attendee'),
+            'email' => Crypt::encryptString('attendee@gmail.com'),
+            'mobile' => Crypt::encryptString('9999999993'),
             'password' => Hash::make('12345678')
         ]);
         $user->assignRole([$adminRole->id]);

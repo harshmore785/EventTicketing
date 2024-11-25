@@ -45,6 +45,7 @@
                                         <th>Ticket Type</th>
                                         <th>Total Tickets</th>
                                         <th>Sold Tickets</th>
+                                        <th>Available Tickets</th>
                                         <th>Price</th>
                                     </tr>
                                 </thead>
@@ -54,10 +55,13 @@
                                             <td><input type="hidden" class="form-control" name="ticket_type_id[]" value="{{ $ticketType->id }}"> {{ $ticketType->name }}</td>
                                             <td>
                                                 <input type="text" class="form-control" name="total_tickets[]">
-                                                <span class="text-danger is-invalid total_tickets_err"></span>
+                                                <span class="text-danger total_tickets[].err"></span> 
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" name="sold_tickets[]" readonly value="0">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" name="available_tickets[]" readonly>
                                             </td>
                                             <td>
                                                 <input type="text" class="form-control" name="price[]">

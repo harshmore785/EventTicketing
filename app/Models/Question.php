@@ -1,22 +1,17 @@
 <?php
 
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
-class TicketType extends BaseModel
+class Question extends BaseModel
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['ticket_type', 'description'];
-
-    public function ticketAvailabilities()
-    {
-        return $this->hasMany(TicketAvailability::class);
-    }
-
+    protected $fillable = ['user_id','event_id', 'subject', 'description'];
 
     public static function booted()
     {

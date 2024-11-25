@@ -10,7 +10,12 @@ class TicketAvailability extends BaseModel
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['event_id', 'ticket_type_id', 'total_tickets', 'sold_tickets', 'price'];
+    protected $fillable = ['event_id', 'ticket_type_id', 'total_tickets','available_tickets', 'sold_tickets', 'price'];
+
+    public function ticketTypes()
+    {
+        return $this->belongsTo(TicketType::class, 'ticket_type_id', 'id');
+    }
 
 
     public static function booted()
